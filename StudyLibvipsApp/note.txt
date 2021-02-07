@@ -1,0 +1,11 @@
+LAB 颜色空间:
+     https://blog.csdn.net/lz0499/article/details/77345166
+
+sRGB & RGB:
+     https://www.zhihu.com/question/20602284
+
+LCH & LAB:
+      http://www.estonetech.com.cn/threestyle/estonetech/companynews/834201.html
+
+深入理解颜色空间：
+    https://www.jianshu.com/p/f03e9ac9c9ef

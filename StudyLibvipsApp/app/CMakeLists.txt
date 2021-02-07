@@ -12,6 +12,8 @@ include_directories(src/main/cpp/include/glib-2.0/include)
 include_directories(src/main/cpp/include/libexif)
 include_directories(src/main/cpp/include/libpng16)
 
+aux_source_directory(src/main/cpp/vipscpp SRC_VIPSCPP)
+
 add_library(exif STATIC IMPORTED)
 set_target_properties(exif PROPERTIES IMPORTED_LOCATION ${LIB_DIR}/libexif.a)
 
@@ -45,6 +47,7 @@ set_target_properties(vips PROPERTIES IMPORTED_LOCATION ${LIB_DIR}/libvips.a)
 add_library(
         study_vips
         SHARED
+        ${SRC_VIPSCPP}
         src/main/cpp/JNIEntry.cpp
 )
 find_library( # Sets the name of the path variable.

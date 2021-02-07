@@ -1,0 +1,59 @@
+struct VipsMat {
+
+    Mat mat;
+    shared_ptr<void > vipsData;
+    size_t dataSize;
+
+    VipsMat(Mat& mat, void* vipsDataRaw, size_t& dataSize) : mat { mat} ,
+                                                             vipsData { shared_ptr<void>(vipsDataRaw, g_free ) },
+                                                             dataSize { dataSize}  {};
+
+};
+
+VipsMat vipsToMat( const VImage& in ) {
+
+    int channels = 0;
+
+    switch ( in.bands() ) {
+    case 1 :
+        channels = CV_8UC1;
+        break;
+    case 2 :
+        channels = CV_8UC2;
+        break;
+
+    case 3 :
+        channels = CV_8UC3;
+        break;
+
+    case 4 :
+        channels = CV_8UC4;
+        break;
+
+    default :
+        throw custom_error() << errno_code( 1 ) << errno_msg("Unsupported image format");
+        // custom boost error.
+    }
+
+
+    size_t dataSize;
+
+    void* data = in.write_to_memory(&dataSize);
+
+    Mat mat = Mat( in.height(), in.width(), channels, data);
+
+    return VipsMat( mat, data, dataSize);
+
+}
+
+VImage matToVips( const Mat& mat ) {
+
+    return VImage ( vips_image_new_from_memory_copy( mat.data,
+                                    mat.elemSize() * mat.cols * mat.rows,
+                                    mat.cols,
+                                    mat.rows,
+                                    mat.channels(),
+                                    VIPS_FORMAT_UCHAR
+                        ) );
+
+}
