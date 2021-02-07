@@ -44,7 +44,7 @@ Java_com_heaven7_android_libvips_app_Libvips_nTest1(JNIEnv *env, jclass clazz, j
     in = NULL;
     out = NULL;
 
-    //目前不支持stroke
+    //目前不支持stroke. 可以使用opencv来做.
     double ink_circle[3] = {255, 0, 0};//color depend on format(VipsBandFormat)
 
     if (!(in = vips_image_new_from_file(inPath, NULL)))
