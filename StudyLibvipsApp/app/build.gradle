@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+apply from: "../common.gradle"
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.heaven7.android.libvips.app"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+        externalNativeBuild {
+            //as-needed 根据需要连接指定的库
+            // ps:  -Wl,--as-needed 选项，链接过程中，链接器会检查所有的依赖库，没有实际被引用的库，不再写入可执行文件头。
+            // 最终生成的可执行文件头中包含的都是必要的链接库信息。
+            // -Wl,--no-as-needed 选项不会做这样的检查，会把用户指定的链接库完全写入可执行文件中。
+
+            //gc-sections 只连接必要的函数
+             //--gc-sections会把没用到的section丢弃掉，最终的可执行文件就只包含用到了的函数和数据。
+            //-flto: 编译优化
+            cmake {
+                cppFlags "-std=c++14 -O2 -pthread " +
+                        "-Wl,--as-needed " +
+                        "-Wl,--gc-sections " +
+                        "-flto "
+            }
+        }
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            jniDebuggable true
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            jniDebuggable true
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
