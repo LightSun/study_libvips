@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <vips/vips.h>
+#include "vips/vips8"
 #include "and_log.h"
 
 //com.heaven7.android.libvips.app
@@ -50,14 +51,15 @@ Java_com_heaven7_android_libvips_app_Libvips_nTest1(JNIEnv *env, jclass clazz, j
     if (!(in = vips_image_new_from_file(inPath, NULL)))
         goto error;
     size = VIPS_IMAGE_SIZEOF_IMAGE(in);
-    width = in->Xsize;
-    height = in->Ysize;
-    bands = in->Bands;
-    format = in->BandFmt;
+    width = vips_image_get_width(in);
+    height = vips_image_get_height(in);
+    bands = vips_image_get_bands(in);
+    format = vips_image_get_format(in);
 
     w = (float)vips_image_get_width(in);
     h = (float)vips_image_get_height(in);
-    LOGD("image width = %d\n", vips_image_get_width(in));
+    LOGD("image size = %d, width = %d, height = %d, band_num = %d, bandFormat = %d, VipsInterpretation = %d",
+         size, width, height, bands, format, in->Type);
 
     // vips_autorot()
     // autorotates based on exif tag :)
@@ -97,4 +99,54 @@ Java_com_heaven7_android_libvips_app_Libvips_nTest1(JNIEnv *env, jclass clazz, j
     env->ReleaseStringUTFChars(jstrOut, outPath);
     //vips_error_exit(NULL);
     return false;
+}
+static int clamp(int val){
+    if(val < 0){
+        val = 0;
+    }
+    if(val > 255){
+        val = 255;
+    }
+    return val;
+}
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_heaven7_android_libvips_app_Libvips_nReadToBuffer(JNIEnv *env, jclass clazz, jstring jstrIn,
+                                                           jobject buffer) {
+    auto inPath = env->GetStringUTFChars(jstrIn, NULL);
+    VipsImage *in;
+    in = NULL;
+
+    if (!(in = vips_image_new_from_file(inPath, "access", VIPS_ACCESS_SEQUENTIAL, NULL))){
+        env->ReleaseStringUTFChars(jstrIn, inPath);
+        return false;
+    }
+    vips::VImage image(in);
+    auto newImg = image.pow(1.0).cast(VIPS_FORMAT_UCHAR); //cast to RGB 888
+
+    //java byte buffer is signed char. vips_image_get_data data is unsigned char
+    auto ptrBuffer = env->GetDirectBufferAddress(buffer);
+    int* pBuf = static_cast<int *>(ptrBuffer);
+    unsigned char* data = (unsigned char *) newImg.data();
+
+    //unsigned char* data = (unsigned char *) vips_image_get_data(in);
+    int h = vips_image_get_height(in);
+    int w = vips_image_get_width(in);
+   //memcpy(ptrBuffer, data, w * h * 3);
+
+    for (int ih = 0 ; ih < h ; ih ++){
+        for (int iw = 0 ; iw < w ; iw ++){
+            int i = ih * w + iw;
+            int idx = i * 3;
+            int r = data[idx];
+            int g = data[idx + 1];
+            int b = data[idx + 2];
+            pBuf[i] = 0xff000000 | (r << 16) | (g << 8) | b;
+        }
+    }
+
+    g_object_unref(in);
+
+    env->ReleaseStringUTFChars(jstrIn, inPath);
+    return true;
 }

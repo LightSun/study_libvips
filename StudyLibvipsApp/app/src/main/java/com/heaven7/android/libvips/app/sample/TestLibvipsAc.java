@@ -2,6 +2,7 @@ package com.heaven7.android.libvips.app.sample;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -19,6 +20,8 @@ import com.heaven7.java.pc.schedulers.Schedulers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class TestLibvipsAc extends AppCompatActivity {
     private static final String TAG = "TestLibvipsAc";
@@ -95,5 +98,41 @@ public class TestLibvipsAc extends AppCompatActivity {
             Logger.d(TAG, "doTest1", "test failed");
         }
         Logger.d(TAG, "doTest1", "test end --------");
+    }
+
+    //TODO fix display different
+    public void onClickReadDataFromVips(View view) {
+        final String out = Environment.getExternalStorageDirectory() + "/temp/test_out_circle.png";
+        Schedulers.io().newWorker().schedule(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = BitmapFactory.decodeFile(out);
+
+                final int w = bitmap.getWidth();
+                final int h = bitmap.getHeight();
+                ByteBuffer buffer1 = ByteBuffer.allocateDirect(w * h * 4);
+                buffer1.order(ByteOrder.nativeOrder());
+                bitmap.copyPixelsToBuffer(buffer1);
+
+                ByteBuffer buffer = ByteBuffer.allocateDirect(w * h * 4);//rgb
+                buffer.order(ByteOrder.nativeOrder());
+                boolean result = Libvips.readToBuffer(out, buffer);
+                Logger.d(TAG, "onClickReadDataFromVips", " readToBuffer result = " + result);
+                if(!result){
+                    return;
+                }
+                System.out.println("buffer equals = " + buffer.equals(buffer1));
+
+                Bitmap bitmap2 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                bitmap2.copyPixelsFromBuffer(buffer.asIntBuffer());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        iv1.setImageBitmap(bitmap);
+                        iv2.setImageBitmap(bitmap2);
+                    }
+                });
+            }
+        });
     }
 }

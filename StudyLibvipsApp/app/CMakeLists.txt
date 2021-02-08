@@ -14,6 +14,7 @@ include_directories(src/main/cpp/include/libpng16)
 include_directories(src/main/cpp/vips_ext)
 
 aux_source_directory(src/main/cpp/vipscpp SRC_VIPSCPP)
+#aux_source_directory(src/main/cpp/gmic SRC_VIPSCPP)
 
 add_library(exif STATIC IMPORTED)
 set_target_properties(exif PROPERTIES IMPORTED_LOCATION ${LIB_DIR}/libexif.a)
@@ -50,6 +51,7 @@ add_library(
         SHARED
         ${SRC_VIPSCPP}
         src/main/cpp/JNIEntry.cpp
+        src/main/cpp/test_connections.c
 )
 find_library( # Sets the name of the path variable.
         log-lib

@@ -17,6 +17,13 @@
             android:text="test_libvips"
             android:onClick="onClickTest1"
             />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="test read image data from vips"
+            android:onClick="onClickReadDataFromVips"
+            />
         <ImageView
             android:id="@+id/iv1"
             android:layout_width="wrap_content"
