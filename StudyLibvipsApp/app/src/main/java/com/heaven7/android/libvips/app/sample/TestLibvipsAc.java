@@ -49,7 +49,7 @@ public class TestLibvipsAc extends AppCompatActivity {
             }
         });
     }
-    private String jpg2png(String in){
+    private static String jpg2png(String in){
         Bitmap bitmap = BitmapFactory.decodeFile(in);
         if(in.endsWith(".jpeg") || in.endsWith(".jpg")){
             String in2 = Environment.getExternalStorageDirectory() + "/temp/test_in.png";
@@ -106,12 +106,13 @@ public class TestLibvipsAc extends AppCompatActivity {
 
     //TODO fix display different. r and b is swapped???
     public void onClickReadDataFromVips(View view) {
-        String in = Environment.getExternalStorageDirectory() + "/Pictures/Screenshots/Screenshot_20210202-000404.jpg";
+        final String in = Environment.getExternalStorageDirectory() + "/Pictures/Screenshots/Screenshot_20210202-000404.jpg";
         Schedulers.io().newWorker().schedule(new Runnable() {
             @Override
             public void run() {
                 //final String out = Environment.getExternalStorageDirectory() + "/temp/test_out_circle.png";
-                final String out = jpg2png(in);
+                //final String out = jpg2png(in);
+                final String out = in;
 
                 Bitmap bitmap = BitmapFactory.decodeFile(out);
                 final int w = bitmap.getWidth();
