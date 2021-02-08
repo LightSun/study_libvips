@@ -11,6 +11,7 @@ include_directories(src/main/cpp/include/glib-2.0)
 include_directories(src/main/cpp/include/glib-2.0/include)
 include_directories(src/main/cpp/include/libexif)
 include_directories(src/main/cpp/include/libpng16)
+include_directories(src/main/cpp/vips_ext)
 
 aux_source_directory(src/main/cpp/vipscpp SRC_VIPSCPP)
 

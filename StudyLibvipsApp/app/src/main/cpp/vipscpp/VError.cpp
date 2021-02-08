@@ -1,10 +1,10 @@
-// VIPS interpolate wrapper
+// Code for error type
 
 /*
 
-    This file is part of VIPS.
-    
-    VIPS is free software; you can redistribute it and/or modify
+    Copyright (C) 1991-2001 The National Gallery
+
+    This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
@@ -27,35 +27,24 @@
 
  */
 
-#ifndef VIPS_VINTERPOLATE_H
-#define VIPS_VINTERPOLATE_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /*HAVE_CONFIG_H*/
+#include <vips/intl.h>
 
-#include <vips/vips.h>
-#include "VObject.h"
+#include <vips/vips8>
 
 VIPS_NAMESPACE_START
 
-class VOption;
-
-class VInterpolate : VObject
+std::ostream &operator<<( std::ostream &file, const VError &err )
 {
-public:
-	VInterpolate( VipsInterpolate *interpolate, VSteal steal = STEAL ) : 
-		VObject( (VipsObject *) interpolate, steal )
-	{
-	}
+	err.ostream_print( file );
+	return( file );
+}
 
-	static 
-	VInterpolate new_from_name( const char *name, VOption *options = 0 );
-
-	VipsInterpolate *
-	get_interpolate() const
-	{
-		return( (VipsInterpolate *) VObject::get_object() );
-	}
-
-};
+void VError::ostream_print( std::ostream &file ) const
+{
+	file << _what;
+}
 
 VIPS_NAMESPACE_END
-
-#endif /*VIPS_VINTERPOLATE_H*/

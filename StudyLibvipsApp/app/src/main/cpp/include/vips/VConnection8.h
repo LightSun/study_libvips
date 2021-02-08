@@ -31,6 +31,7 @@
 #define VIPS_VCONNECTION_H
 
 #include <vips/vips.h>
+#include "VObject.h"
 
 VIPS_NAMESPACE_START
 
@@ -59,7 +60,7 @@ public:
 	VSource new_from_options( const char *options );
 
 	VipsSource *
-	get_source() const
+	get_source()const
 	{
 		return( (VipsSource *) VObject::get_object() );
 	}
