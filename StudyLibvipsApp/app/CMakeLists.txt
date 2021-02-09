@@ -7,6 +7,7 @@ enable_language(C)
 
 set(LIB_DIR ${CMAKE_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI})
 include_directories(src/main/cpp/include)
+include_directories(src/main/cpp/include2)
 include_directories(src/main/cpp/include/glib-2.0)
 include_directories(src/main/cpp/include/glib-2.0/include)
 include_directories(src/main/cpp/include/libexif)

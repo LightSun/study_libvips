@@ -24,7 +24,8 @@ android {
                 cppFlags "-std=c++14 -O2 -pthread " +
                         "-Wl,--as-needed " +
                        // "-Wl,--gc-sections " +
-                        "-flto -Dcimg_OS=0"
+                        //"-flto " +
+                        ""
             }
         }
         ndk {
@@ -66,4 +67,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    def butterknife = '10.0.0'
+
+    implementation "com.jakewharton:butterknife:${butterknife}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${butterknife}"
 }
