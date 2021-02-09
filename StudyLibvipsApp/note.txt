@@ -36,3 +36,7 @@ VipsPel *pixel = VIPS_REGION_ADDR( region, x, y );
 // everything in libvips is a GObject ... when you're done,
 // just free with
 g_object_unref( region );
+
+
+========================= opencv =============
+绘制轮廓: https://www.cnblogs.com/wojianxin/p/12600958.html

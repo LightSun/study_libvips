@@ -57,6 +57,7 @@ public class TestOpenCvAc extends BaseActivity {
             public void run() {
                 //Imgproc.d
                 Mat mat = Imgcodecs.imread(in);
+                //https://blog.csdn.net/zssyu0416/article/details/82852339
                 Logger.d(TAG, "onClickBaseDraw","channels = " + mat.channels()
                         + " ,type = " + typeToString(mat.type())); //8UC3 : 8位 unsigned .3 channel
 
@@ -66,6 +67,9 @@ public class TestOpenCvAc extends BaseActivity {
                 Imgproc.line(mat, p1, p2, color, 5, 8, 0);
 
                 Imgproc.circle(mat, p1, 30,  new Scalar(255, 0, 0), 10);
+                //FONT_HERSHEY_COMPLEX
+                //opencv 不支持中文.
+                Imgproc.putText(mat, "我爱中华", p2, 3, 2.0, color);
 
                 //mat.convertTo(mat, CvType.CV_32SC4);
 
