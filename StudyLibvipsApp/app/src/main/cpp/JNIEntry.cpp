@@ -121,19 +121,20 @@ Java_com_heaven7_android_libvips_app_Libvips_nReadToBuffer(JNIEnv *env, jclass c
         env->ReleaseStringUTFChars(jstrIn, inPath);
         return false;
     }
-    vips::VImage image(in);
-    auto newImg = image.pow(1.0).cast(VIPS_FORMAT_UCHAR); //cast to RGB 888
+    //vips::VImage image(in);
+    //auto newImg = image.pow(1.0).cast(VIPS_FORMAT_UCHAR); //cast to RGB 888
 
     //java byte buffer is signed char. vips_image_get_data data is unsigned char
     auto ptrBuffer = env->GetDirectBufferAddress(buffer);
     int* pBuf = static_cast<int *>(ptrBuffer);
-    unsigned char* data = (unsigned char *) newImg.data();
+    //unsigned char* data = (unsigned char *) image.data();
 
-    //unsigned char* data = (unsigned char *) vips_image_get_data(in);
+    unsigned char* data = (unsigned char *) vips_image_get_data(in);
     int h = vips_image_get_height(in);
     int w = vips_image_get_width(in);
    //memcpy(ptrBuffer, data, w * h * 3);
 
+   //livips offical say image format is rgb. but here is bgr. why?
     for (int ih = 0 ; ih < h ; ih ++){
         for (int iw = 0 ; iw < w ; iw ++){
             int i = ih * w + iw;
@@ -149,4 +150,42 @@ Java_com_heaven7_android_libvips_app_Libvips_nReadToBuffer(JNIEnv *env, jclass c
 
     env->ReleaseStringUTFChars(jstrIn, inPath);
     return true;
+}
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_com_heaven7_android_libvips_app_Libvips_nReadToBuffer2(JNIEnv *env, jclass clazz, jstring jstrIn) {
+    auto inPath = env->GetStringUTFChars(jstrIn, NULL);
+    VipsImage *in;
+    in = NULL;
+
+    if (!(in = vips_image_new_from_file(inPath, "access", VIPS_ACCESS_SEQUENTIAL, NULL))){
+        env->ReleaseStringUTFChars(jstrIn, inPath);
+        return NULL;
+    }
+
+    unsigned char* data = (unsigned char *) vips_image_get_data(in);
+    int h = vips_image_get_height(in);
+    int w = vips_image_get_width(in);
+    //memcpy(ptrBuffer, data, w * h * 3);
+    auto buffer = env->NewByteArray(h * w * 4);
+
+    auto byteBuf = env->GetByteArrayElements(buffer, NULL);
+    int* pBuf = reinterpret_cast<int *>(byteBuf);
+    for (int ih = 0 ; ih < h ; ih ++){
+        for (int iw = 0 ; iw < w ; iw ++){
+            int i = ih * w + iw;
+            int idx = i * 3;
+            int r = data[idx];
+            int g = data[idx + 1];
+            int b = data[idx + 2];
+            pBuf[i] = 0xff000000 | (r << 16) | (g << 8) | b;
+        }
+    }
+
+    g_object_unref(in);
+
+    env->ReleaseStringUTFChars(jstrIn, inPath);
+    env->ReleaseByteArrayElements(buffer, byteBuf, 0);
+    return buffer;
 }

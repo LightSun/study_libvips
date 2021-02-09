@@ -32,9 +32,17 @@ public final class Libvips {
         return result;
     }
 
+    public static byte[] readToBuffer(String path){
+        long start = System.currentTimeMillis();
+        byte[] result = nReadToBuffer2(path);
+        System.out.println("vips readToBuffer cost: " + (System.currentTimeMillis() - start));
+        return result;
+    }
+
     private static native void nInit(String argv0);
     private static native void nDestroy();
     private static native boolean nTest1(String in, String out);
     private static native boolean nReadToBuffer(String in,ByteBuffer buffer);
+    private static native byte[] nReadToBuffer2(String in);
 }
 

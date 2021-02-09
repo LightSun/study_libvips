@@ -18,7 +18,6 @@ import com.heaven7.java.base.util.IOUtils;
 import com.heaven7.java.pc.schedulers.Schedulers;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -28,6 +27,7 @@ public class TestLibvipsAc extends AppCompatActivity {
 
     ImageView iv1;
     ImageView iv2;
+    ImageView iv3;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,6 +35,7 @@ public class TestLibvipsAc extends AppCompatActivity {
         setContentView(R.layout.ac_test_libvips);
         iv1 = findViewById(R.id.iv1);
         iv2 = findViewById(R.id.iv2);
+        iv3 = findViewById(R.id.iv3);
     }
 
     public void onClickTest1(View view) {
@@ -48,10 +49,7 @@ public class TestLibvipsAc extends AppCompatActivity {
             }
         });
     }
-
-    private void doTest1(String in, String out){
-        Logger.d(TAG, "doTest1", "test start -------");
-       // String in = Environment.getExternalStorageDirectory() + "/DCIM/Camera/IMG_20200308_143039.jpg";
+    private String jpg2png(String in){
         Bitmap bitmap = BitmapFactory.decodeFile(in);
         if(in.endsWith(".jpeg") || in.endsWith(".jpg")){
             String in2 = Environment.getExternalStorageDirectory() + "/temp/test_in.png";
@@ -66,19 +64,25 @@ public class TestLibvipsAc extends AppCompatActivity {
                 outStream.flush();
                 in = in2;
             } catch (Exception e) {
-                e.printStackTrace();
-                return;
+                throw new RuntimeException(e);
             }finally {
                 IOUtils.closeQuietly(outStream);
             }
         }
+        return in;
+    }
 
+    private void doTest1(String in, String out){
+        Logger.d(TAG, "doTest1", "test start -------");
+       // String in = Environment.getExternalStorageDirectory() + "/DCIM/Camera/IMG_20200308_143039.jpg";
+        in = jpg2png(in);
         //String out = Environment.getExternalStorageDirectory() + "/temp/test_out.png";
         if(!new File(in).exists()){
             System.err.println("file not exit. file = " + in);
             return;
         }
         new File(out).delete();
+        final Bitmap bitmap = BitmapFactory.decodeFile(in);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -100,19 +104,18 @@ public class TestLibvipsAc extends AppCompatActivity {
         Logger.d(TAG, "doTest1", "test end --------");
     }
 
-    //TODO fix display different
+    //TODO fix display different. r and b is swapped???
     public void onClickReadDataFromVips(View view) {
-        final String out = Environment.getExternalStorageDirectory() + "/temp/test_out_circle.png";
+        String in = Environment.getExternalStorageDirectory() + "/Pictures/Screenshots/Screenshot_20210202-000404.jpg";
         Schedulers.io().newWorker().schedule(new Runnable() {
             @Override
             public void run() {
-                Bitmap bitmap = BitmapFactory.decodeFile(out);
+                //final String out = Environment.getExternalStorageDirectory() + "/temp/test_out_circle.png";
+                final String out = jpg2png(in);
 
+                Bitmap bitmap = BitmapFactory.decodeFile(out);
                 final int w = bitmap.getWidth();
                 final int h = bitmap.getHeight();
-                ByteBuffer buffer1 = ByteBuffer.allocateDirect(w * h * 4);
-                buffer1.order(ByteOrder.nativeOrder());
-                bitmap.copyPixelsToBuffer(buffer1);
 
                 ByteBuffer buffer = ByteBuffer.allocateDirect(w * h * 4);//rgb
                 buffer.order(ByteOrder.nativeOrder());
@@ -121,15 +124,19 @@ public class TestLibvipsAc extends AppCompatActivity {
                 if(!result){
                     return;
                 }
-                System.out.println("buffer equals = " + buffer.equals(buffer1));
-
+                //image2
                 Bitmap bitmap2 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                 bitmap2.copyPixelsFromBuffer(buffer.asIntBuffer());
+                //image 3
+                Bitmap bitmap3 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                bitmap3.copyPixelsFromBuffer(ByteBuffer.wrap(Libvips.readToBuffer(out)));
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         iv1.setImageBitmap(bitmap);
                         iv2.setImageBitmap(bitmap2);
+                        iv3.setImageBitmap(bitmap3);
                     }
                 });
             }
