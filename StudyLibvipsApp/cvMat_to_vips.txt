@@ -57,3 +57,4 @@ VImage matToVips( const Mat& mat ) {
                         ) );
 
 }
+

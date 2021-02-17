@@ -104,7 +104,7 @@ public class TestLibvipsAc extends AppCompatActivity {
         Logger.d(TAG, "doTest1", "test end --------");
     }
 
-    //TODO fix display different. r and b is swapped???
+    //TODO fix display different. r and b is swapped??? 可能是大端小端问题.vips 小端可能是bgr. 大端rgb
     public void onClickReadDataFromVips(View view) {
         final String in = Environment.getExternalStorageDirectory() + "/Pictures/Screenshots/Screenshot_20210202-000404.jpg";
         Schedulers.io().newWorker().schedule(new Runnable() {

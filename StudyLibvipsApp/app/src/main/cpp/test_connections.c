@@ -136,7 +136,7 @@ main_test_conn( int argc, char **argv )
 	my_output.filename = argv[2];
 	my_output.fd = -1;
 
-	if( (my_output.fd = vips__open( my_output.filename, 
+	if( (my_output.fd = vips__open( my_output.filename,
 		O_WRONLY | O_CREAT | O_TRUNC, 0644 )) == -1 )
 		vips_error_exit( "unable to save to %s", my_output.filename );
 

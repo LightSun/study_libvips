@@ -38,5 +38,20 @@ VipsPel *pixel = VIPS_REGION_ADDR( region, x, y );
 g_object_unref( region );
 
 
+//get all options
+vips_object_get_args(...)
 ========================= opencv =============
 绘制轮廓: https://www.cnblogs.com/wojianxin/p/12600958.html
+
+
+======================== glib ==========================
+ self = g_object_new(DLNA_TYPE_DMP, "client",context,"target",target,NULL);---
+ /*创建一个dlnadmp对象，并将其属性client指针成员赋初值为context。client的定义在其父类即gssdpreourcebrowser的成员gssdpclient *client。
+
+ g_object_new(...) 可以同时设置多个成员变量
+ g_object_set(...) 可以同时设置多个成员变量
+
+
+  g_return_val_if_fail(target != NULL, NULL);
+  g_sign_emit（...） 发送信号
+  g_sign_connect(...) 相当于设置回调
