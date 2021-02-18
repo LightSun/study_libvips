@@ -33,7 +33,7 @@ GType study_person_get_type(void);
 	STUDY_PERSON_TYPE, Person ))
 
 	//test
-gboolean test_person_get_set(const char* str, int val);
+gboolean test_person_get_set(const char* str, gint val);
 
 CPP_END
 

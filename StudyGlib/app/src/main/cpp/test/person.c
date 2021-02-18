@@ -31,7 +31,7 @@ study_person_get_property( GObject *object, guint prop_id,
 
     switch( prop_id ) {
         case PROP_NAME:
-            g_value_set_object(value, (gpointer)gstream->name);
+            g_value_set_string(value, gstream->name);
             break;
 
         case PROP_AGE:
@@ -48,6 +48,7 @@ study_person_set_property( GObject *object, guint prop_id,
 {
     Person *gstream = STUDY_PERSON_GET_OBJECT( object );
 
+    //g_object_set_property (object, pspec->name, value);
     switch( prop_id ) {
         case PROP_NAME:
             //g_boxed_copy()
@@ -56,7 +57,7 @@ study_person_set_property( GObject *object, guint prop_id,
             break;
 
         case PROP_AGE:
-            gstream->age = value->data->v_int;
+            gstream->age = g_value_get_int(value);
             break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID( object, prop_id, pspec );
@@ -86,12 +87,13 @@ static void study_person_init(Person* p){
 
 }
 
-gboolean test_person_get_set(const char* str, int val){
+gboolean test_person_get_set(const char* str, gint val){
     // Person* p = g_new(Person, 1);
-    gpointer p = g_object_new(STUDY_PERSON_TYPE, "name", "heaven7", NULL);
+    Person* p = g_object_new(STUDY_PERSON_TYPE, "name", "heaven7", NULL);
+    //Person* pp = p;
 
     guint prop = 100;
-    GParamSpec **const spec = g_object_class_list_properties(G_OBJECT_CLASS(study_person_parent_class), &prop);
+    GParamSpec **const spec = g_object_class_list_properties(G_OBJECT_CLASS(STUDY_PERSON_GET_CLASS(p)), &prop);
     if(spec){
         for (int i = 0; i < prop; ++i) {
             if(spec[i]){
@@ -102,20 +104,26 @@ gboolean test_person_get_set(const char* str, int val){
         LOGD("no property for person");
     }
 
-    if(g_object_class_find_property(G_OBJECT_CLASS(p), str) == NULL){
+    if(g_object_class_find_property(G_OBJECT_CLASS(STUDY_PERSON_GET_CLASS(p)), str) == NULL){
         LOGW("Person >>> can't find property of %s", str);
         g_object_unref(p);
         return FALSE; //0
     }
 
-    g_object_set(p, str, val);
+    GValue age = {0};//must init {0}
+    g_value_init(&age, G_TYPE_INT);
+    g_value_set_int(&age, val);
 
-    //STUDY_PERSON_GET_CLASS(p);
+    //g_object_set(p, str, age, NULL); //不生效 ， why?
+    g_object_set_property(G_OBJECT(p), str, &age); //
+    g_value_init(&age, G_TYPE_INT);
 
-    GValue age;
+    //g_object_notify(G_OBJECT(p), str); //used for function callback
+
     g_object_get_property(G_OBJECT(p), str, &age);
 
-    GValue pname;
+    GValue pname = {0};
+    g_value_init(&age, G_TYPE_STRING);
     g_object_get_property(G_OBJECT(p), "name", &pname);
     LOGD("after c reflect: name = %s, age = %d", g_value_get_string(&pname), g_value_get_int(&age));
     g_value_unset(&age);
