@@ -6,6 +6,9 @@
 #include "test/person.h"
 #include "core/and_log.h"
 
+extern "C" int
+main0(int argc, char *argv[]);
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_heaven7_android_glib_app_LibGlib_nTest(JNIEnv *env, jclass clazz, jstring name, jint val) {
@@ -16,6 +19,10 @@ Java_com_heaven7_android_glib_app_LibGlib_nTest(JNIEnv *env, jclass clazz, jstri
         return;
     }
     env->ReleaseStringUTFChars(name, str);
+
+    char* argv[1];
+    argv[0] = const_cast<char *>("abc");
+    main0(1, argv);
 }
 extern "C"
 JNIEXPORT void JNICALL

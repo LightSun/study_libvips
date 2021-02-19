@@ -13,7 +13,7 @@ CPP_START
 typedef struct _Person{
     GObject parent_instance;
     gint age;
-    const gchar* name;
+    gchar* name;
 }Person;
 
 typedef struct _PersonClass{
