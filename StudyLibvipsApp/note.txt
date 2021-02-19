@@ -55,3 +55,24 @@ vips_object_get_args(...)
   g_return_val_if_fail(target != NULL, NULL);
   g_sign_emit（...） 发送信号
   g_sign_connect(...) 相当于设置回调
+
+  ===========================================
+  #define VIPS_ARG_INT( CLASS, NAME, PRIORITY, LONG, DESC, \
+  	FLAGS, OFFSET, MIN, MAX, VALUE ) { \
+  	GParamSpec *pspec; \
+  	\
+  	pspec = g_param_spec_int( (NAME), (LONG), (DESC), \
+  		(MIN), (MAX), (VALUE), \
+  		(GParamFlags) (G_PARAM_READWRITE) );\
+  	g_object_class_install_property( G_OBJECT_CLASS( CLASS ), \
+  		vips_argument_get_id(), pspec ); \
+  	vips_object_class_install_argument( VIPS_OBJECT_CLASS( CLASS ), \
+  		pspec, (VipsArgumentFlags) (FLAGS), (PRIORITY), (OFFSET) ); \
+  }
+
+  VIPS_ARG_INT( class, "x1", 3,
+  		_( "x1" ),
+  		_( "Start of draw_line" ),
+  		VIPS_ARGUMENT_REQUIRED_INPUT,
+  		G_STRUCT_OFFSET( VipsDrawLine, x1 ),
+  		-1000000000, 1000000000, 0 );
