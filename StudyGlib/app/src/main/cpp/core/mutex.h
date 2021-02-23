@@ -20,9 +20,18 @@ extern "C" {
 #include <gio/gio.h>
 
 void
-vips_g_mutex_free( GMutex *mutex );
+h_g_mutex_free( GMutex *mutex );
+
 GMutex *
-vips_g_mutex_new( void );
+h_g_mutex_new( void );
+
+void h_g_mutex_init();
+void h_g_mutex_destroy();
+
+void h_g_mutex_global_lock();
+void h_g_mutex_global_unlock();
+gboolean h_g_mutex_global_tryLock();
+
 
 #ifdef __cplusplus
 }

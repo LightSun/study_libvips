@@ -5,6 +5,7 @@
 #include "jni.h"
 #include "test/person.h"
 #include "core/and_log.h"
+#include "test/hobject.h"
 
 extern "C" int
 main0(int argc, char *argv[]);
